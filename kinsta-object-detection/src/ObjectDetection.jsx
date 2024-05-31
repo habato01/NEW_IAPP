@@ -9,9 +9,14 @@ const ObjectDetection = () => {
   const [detectionInterval, setDetectionInterval] = useState();
 
   const startWebcam = async () => {
-    try {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      const constraints = {
+        video: { facingMode: "environment" } // Solicitar la cámara trasera
+      };
+  
+      try {
         setIsWebcamStarted(true);
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
   
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -20,6 +25,10 @@ const ObjectDetection = () => {
         setIsWebcamStarted(false);
         console.error('Error accessing webcam:', error);
       }
+    } else {
+      console.error('getUserMedia is not supported in this browser.');
+    }
+      
   };
 
   const predictObject = async () => {
